@@ -104,13 +104,13 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
             throws IOException, GoogleAuthException {
         // ID of the script to call. Acquire this from the Apps Script editor,
         // under Publish > Deploy as API executable.
-        String scriptId = "MgGE-kS-dsVH1stEVvatOcZJkq2sV7_hS";
+        String scriptId = "MxHLP1QI91n-nKR__hXfJ90Nptr_xnHQR";
 
         List<String> folderList = new ArrayList<String>();
 
         // Create an execution request object.
             ExecutionRequest request = new ExecutionRequest()
-                .setFunction("getItems");
+                .setFunction("getData");
 
         List<Object> params = new ArrayList<Object>();
         params.add("a");
