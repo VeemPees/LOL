@@ -35,17 +35,14 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
     private com.google.api.services.script.Script mService = null;
     private Exception mLastError = null;
     private ProgressDialog mProgress;
-    private TextView mOutputText;
     private Activity mActivity;
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
     static final int REQUEST_AUTHORIZATION = 1001;
 
     public MakeRequestTask(GoogleAccountCredential credential,
                            ProgressDialog progress,
-                           TextView outputText,
                            Activity activity) {
         mProgress = progress;
-        mOutputText = outputText;
         mActivity = activity;
         HttpTransport transport = AndroidHttp.newCompatibleTransport();
         JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
@@ -195,7 +192,6 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
 
     @Override
     protected void onPreExecute() {
-        mOutputText.setText("");
         mProgress.show();
     }
 
@@ -203,10 +199,10 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
     protected void onPostExecute(List<String> output) {
         mProgress.hide();
         if (output == null || output.size() == 0) {
-            mOutputText.setText("No results returned.");
+            Logger.i("No results returned.");
         } else {
             output.add(0, "Data retrieved using the Google Apps Script Execution API:");
-            mOutputText.setText(TextUtils.join("\n", output));
+            Logger.i(TextUtils.join("\n", output));
         }
     }
 
@@ -223,11 +219,11 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
                         ((UserRecoverableAuthIOException) mLastError).getIntent(),
                         REQUEST_AUTHORIZATION);
             } else {
-                mOutputText.setText("The following error occurred:\n"
+                Logger.e("The following error occurred:\n"
                         + mLastError.getMessage());
             }
         } else {
-            mOutputText.setText("Request cancelled.");
+            Logger.i("Request cancelled.");
         }
     }
 
