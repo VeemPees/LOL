@@ -13,9 +13,11 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ExpandableListView;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -27,14 +29,8 @@ import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ProgressDialog mProgress;
-    private TextView mOutputText;
-    GoogleAccountCredential mCredential;
 
-
-    static final int REQUEST_ACCOUNT_PICKER = 1000;
-    private static final String PREF_ACCOUNT_NAME = "accountName";
-    private static final String[] SCOPES = { "https://www.googleapis.com/auth/drive", "https://spreadsheets.google.com/feeds" };
+    PropertyListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,17 +48,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mOutputText = (TextView)findViewById(R.id.textView);
 
-        mProgress = new ProgressDialog(this);
-        mProgress.setMessage("Calling Google Apps Script Execution API ...");
 
-        // Initialize credentials and service object.
         SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
-        mCredential = GoogleAccountCredential.usingOAuth2(
-                getApplicationContext(), Arrays.asList(SCOPES))
-                .setBackOff(new ExponentialBackOff())
-                .setSelectedAccountName(settings.getString(PREF_ACCOUNT_NAME, null));
+        Globals.getGlobals().initCredentials(settings.getString(Constants.PREF_ACCOUNT_NAME, null));
+
+        this.adapter = new PropertyListAdapter(this);
+        final ExpandableListView propertyList = (ExpandableListView) findViewById(R.id.mainList);
+        propertyList.setAdapter(this.adapter);
     }
 
     @Override
@@ -91,29 +84,29 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch(requestCode) {
-            case MakeRequestTask.REQUEST_GOOGLE_PLAY_SERVICES:
+            case Constants.REQUEST_GOOGLE_PLAY_SERVICES:
                 if (resultCode != RESULT_OK) {
-                    isGooglePlayServicesAvailable();
+                    Globals.getGlobals().isGooglePlayServicesAvailable(this);
                 }
                 break;
-            case REQUEST_ACCOUNT_PICKER:
+            case Constants.REQUEST_ACCOUNT_PICKER:
                 if (resultCode == RESULT_OK && data != null &&
                         data.getExtras() != null) {
                     String accountName =
                             data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
                     if (accountName != null) {
-                        mCredential.setSelectedAccountName(accountName);
+                        Globals.getGlobals().setSelectedAccountName(accountName);
                         SharedPreferences settings =
                                 getPreferences(Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = settings.edit();
-                        editor.putString(PREF_ACCOUNT_NAME, accountName);
+                        editor.putString(Constants.PREF_ACCOUNT_NAME, accountName);
                         editor.apply();
                     }
                 } else if (resultCode == RESULT_CANCELED) {
-                    mOutputText.setText("Account unspecified.");
+                    Logger.i("Account unspecified.");
                 }
                 break;
-            case MakeRequestTask.REQUEST_AUTHORIZATION:
+            case Constants.REQUEST_AUTHORIZATION:
                 if (resultCode != RESULT_OK) {
                     chooseAccount();
                 }
@@ -122,42 +115,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void chooseAccount() {
-        startActivityForResult(
-                mCredential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
-    }
-
-    /**
-     * Check that Google Play services APK is installed and up to date. Will
-     * launch an error dialog for the user to update Google Play Services if
-     * possible.
-     * @return true if Google Play Services is available and up to
-     *     date on this device; false otherwise.
-     */
-    private boolean isGooglePlayServicesAvailable() {
-        final int connectionStatusCode =
-                GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-        if (GooglePlayServicesUtil.isUserRecoverableError(connectionStatusCode)) {
-            showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode);
-            return false;
-        } else if (connectionStatusCode != ConnectionResult.SUCCESS ) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Display an error dialog showing that Google Play Services is missing
-     * or out of date.
-     * @param connectionStatusCode code describing the presence (or lack of)
-     *     Google Play Services on this device.
-     */
-    void showGooglePlayServicesAvailabilityErrorDialog(
-            final int connectionStatusCode) {
-        Dialog dialog = GooglePlayServicesUtil.getErrorDialog(
-                connectionStatusCode,
-                MainActivity.this,
-                MakeRequestTask.REQUEST_GOOGLE_PLAY_SERVICES);
-        dialog.show();
+        Globals.getGlobals().pickAccount(this);
     }
 
     /**
@@ -167,24 +125,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (isGooglePlayServicesAvailable()) {
+        if (Globals.getGlobals().isGooglePlayServicesAvailable(this)) {
             refreshResults();
         } else {
-            mOutputText.setText("Google Play Services required: " +
+            //TODO
+            Logger.e("Google Play Services required: " +
                     "after installing, close and relaunch this app.");
         }
     }
 
-    /**
-     * Checks whether the device currently has a network connection.
-     * @return true if the device has a network connection, false otherwise.
-     */
-    private boolean isDeviceOnline() {
-        ConnectivityManager connMgr =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        return (networkInfo != null && networkInfo.isConnected());
-    }
+
 
     /**
      * Attempt to get a set of data from the Google Apps Script Execution API to display. If the
@@ -192,13 +142,14 @@ public class MainActivity extends AppCompatActivity {
      * user can pick an account.
      */
     private void refreshResults() {
-        if (mCredential.getSelectedAccountName() == null) {
+        if (!Globals.getGlobals().isAccountSelected()) {
             chooseAccount();
         } else {
-            if (isDeviceOnline()) {
-                new MakeRequestTask(mCredential, mProgress, mOutputText, this).execute();
+            if (Globals.getGlobals().IsDeviceOnline()) {
+                //new MakeRequestTask(mCredential, mProgress, this).execute();
             } else {
-                mOutputText.setText("No network connection available.");
+                //TODO mOutputText.setText("No network connection available.");
+                Logger.e("No network connection available.");
             }
         }
     }

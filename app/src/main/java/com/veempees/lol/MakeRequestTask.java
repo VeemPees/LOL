@@ -36,8 +36,7 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
     private Exception mLastError = null;
     private ProgressDialog mProgress;
     private Activity mActivity;
-    static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
-    static final int REQUEST_AUTHORIZATION = 1001;
+
 
     public MakeRequestTask(GoogleAccountCredential credential,
                            ProgressDialog progress,
@@ -211,13 +210,13 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
         mProgress.hide();
         if (mLastError != null) {
             if (mLastError instanceof GooglePlayServicesAvailabilityIOException) {
-                showGooglePlayServicesAvailabilityErrorDialog(
+                Globals.getGlobals().showGooglePlayServicesAvailabilityErrorDialog(
                         ((GooglePlayServicesAvailabilityIOException) mLastError)
-                                .getConnectionStatusCode());
+                                .getConnectionStatusCode(), mActivity);
             } else if (mLastError instanceof UserRecoverableAuthIOException) {
                 mActivity.startActivityForResult(
                         ((UserRecoverableAuthIOException) mLastError).getIntent(),
-                        REQUEST_AUTHORIZATION);
+                        Constants.REQUEST_AUTHORIZATION);
             } else {
                 Logger.e("The following error occurred:\n"
                         + mLastError.getMessage());
@@ -225,15 +224,6 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
         } else {
             Logger.i("Request cancelled.");
         }
-    }
-
-    void showGooglePlayServicesAvailabilityErrorDialog(
-            final int connectionStatusCode) {
-        Dialog dialog = GooglePlayServicesUtil.getErrorDialog(
-                connectionStatusCode,
-                mActivity,
-                REQUEST_GOOGLE_PLAY_SERVICES);
-        dialog.show();
     }
 }
 
