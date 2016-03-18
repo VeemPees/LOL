@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,6 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
     private Exception mLastError = null;
     private ProgressDialog mProgress;
     private Activity mActivity;
-
 
     public MakeRequestTask(GoogleAccountCredential credential,
                            ProgressDialog progress,
@@ -98,25 +98,20 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
      */
     private List<String> getDataFromApi()
             throws IOException, GoogleAuthException {
-        // ID of the script to call. Acquire this from the Apps Script editor,
-        // under Publish > Deploy as API executable.
-        String scriptId = "MxHLP1QI91n-nKR__hXfJ90Nptr_xnHQR";
 
         List<String> folderList = new ArrayList<String>();
 
         // Create an execution request object.
-            ExecutionRequest request = new ExecutionRequest()
-                .setFunction("getData");
+        ExecutionRequest request = new ExecutionRequest().setFunction("getItems");
 
-        List<Object> params = new ArrayList<Object>();
-        params.add("a");
+        //List<Object> params = new ArrayList<Object>();
+        //params.add("a");
 
-        request.setParameters(params);
+        //request.setParameters(params);
         request.setDevMode(true);
 
         // Make the request.
-        Operation op =
-                mService.scripts().run(scriptId, request).execute();
+        Operation op = mService.scripts().run(Constants.SCRIPT_ID, request).execute();
 
         // Print results of request.
         if (op.getError() != null) {
@@ -132,8 +127,24 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
 
             Object o = op.getResponse().get("result");
 
-            ArrayList<String> items =
-                    (ArrayList<String>)(op.getResponse().get("result"));
+            if (o instanceof String) {
+                folderList.add((String) o);
+            } else if (o instanceof ArrayList) {
+                ArrayList<ArrayList<Object>> ret = (ArrayList<ArrayList<Object>>)o;
+                for (ArrayList<Object> row : ret)
+                {
+                    // 0   1       2      3      4      5    6    7         8
+                    // ID, IsDone, QttID, MmtID, Value, Qtt, Mmt, PrpCount, ...
+                    Item item = new Item((Integer)row.get(0), (String)row.get(4), (String)row.get(5), (String)row.get(6), (boolean)row.get(1));
+                    //item.addProperty();
+                    //ItemFramework.getInstance().
+                }
+                folderList.add("Expected");
+            } else
+            {
+                folderList.add("Compound answer");
+            }
+            //ArrayList<String> items = (ArrayList<String>)o;
                 /*Map<String, String> folderSet =
                         (Map<String, String>)(op.getResponse().get("result"));
 
@@ -142,7 +153,7 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
                             String.format("%s (%s)", folderSet.get(id), id));
                 }
                 */
-            folderList = items;
+            //folderList = items;
         }
 
         return folderList;

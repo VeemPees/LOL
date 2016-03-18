@@ -36,14 +36,9 @@ public class ItemFramework {
         serializer = new Serializer();
     }
 
-    public void Reload(Activity activity)
+    public void reload(Activity activity)
     {
         serializer.Download(activity);
-        theItems = serializer.getItems();
-        theProperties = serializer.getProperties();
-        theQuantities = serializer.getQuantities();
-        theMeasurements = serializer.getMeasurements();
-        theMementos = serializer.getMementos();
     }
 
     private boolean isValidPropertyId(int propId) {
@@ -57,13 +52,8 @@ public class ItemFramework {
         return false;
     }
 
-    public void Store(Activity activity)
+    public void store(Activity activity)
     {
-        serializer.setItems(theItems);
-        serializer.setProperties(theProperties);
-        serializer.setMementos(theMementos);
-        serializer.setQuantities(theQuantities);
-        serializer.setMeasurements(theMeasurements);
         serializer.Upload(activity);
     }
 
@@ -139,7 +129,7 @@ public class ItemFramework {
         {
             theMementos.add(item);
         }
-        //TODO Store();
+        //TODO store();
         return null; // brand new
     }
 
