@@ -81,7 +81,7 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
     @Override
     protected List<String> doInBackground(Void... params) {
         try {
-            return getDataFromApi();
+            return getDataFromApi("getItems");
         } catch (Exception e) {
             mLastError = e;
             cancel(true);
@@ -90,24 +90,21 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
     }
 
     /**
-     * Call the API to run an Apps Script function that returns a list
-     * of folders within the user's root directory on Drive.
-     *
-     * @return list of String folder names and their IDs
-     * @throws IOException
+     * Call the API to run an Apps Script function
+     * @throws IOException, GoogleAuthException
      */
-    private List<String> getDataFromApi()
+
+    private List<String> getDataFromApi(String fnName)
             throws IOException, GoogleAuthException {
 
-        List<String> folderList = new ArrayList<String>();
-
         // Create an execution request object.
-        ExecutionRequest request = new ExecutionRequest().setFunction("getItems");
+        ExecutionRequest request = new ExecutionRequest().setFunction(fnName);
 
         //List<Object> params = new ArrayList<Object>();
         //params.add("a");
-
         //request.setParameters(params);
+
+        // TODO
         request.setDevMode(true);
 
         // Make the request.
@@ -128,7 +125,7 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
             Object o = op.getResponse().get("result");
 
             if (o instanceof String) {
-                folderList.add((String) o);
+
             } else if (o instanceof ArrayList) {
                 ArrayList<ArrayList<Object>> ret = (ArrayList<ArrayList<Object>>)o;
                 for (ArrayList<Object> row : ret)
@@ -136,13 +133,16 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
                     // 0   1       2      3      4      5    6    7         8
                     // ID, IsDone, QttID, MmtID, Value, Qtt, Mmt, PrpCount, ...
                     Item item = new Item((Integer)row.get(0), (String)row.get(4), (String)row.get(5), (String)row.get(6), (boolean)row.get(1));
-                    //item.addProperty();
-                    //ItemFramework.getInstance().
+                    for(int i = 0; i < (int)row.get(7); i++)
+                    {
+                        item.addProperty((Integer)row.get(8 + i));
+                    }
+                    ItemFramework.getInstance().Add(item);
                 }
-                folderList.add("Expected");
+
             } else
             {
-                folderList.add("Compound answer");
+
             }
             //ArrayList<String> items = (ArrayList<String>)o;
                 /*Map<String, String> folderSet =
@@ -156,7 +156,7 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
             //folderList = items;
         }
 
-        return folderList;
+        return null;
     }
 
     /**

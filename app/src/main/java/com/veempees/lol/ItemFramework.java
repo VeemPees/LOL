@@ -104,6 +104,7 @@ public class ItemFramework {
         return null;
     }
 
+    /*
     public Item Add(String string, List<Property> newProps, String qty, String mmt) {
 
         Item item = new Item(string);
@@ -131,6 +132,20 @@ public class ItemFramework {
         }
         //TODO store();
         return null; // brand new
+    }
+    */
+
+    public void Add(Item item) {
+
+        theItems.add(item);
+        /* TODO check if to be added to mementos
+        Item existingMemento = mementoOrItemExists(item, true);
+        if (existingMemento == null)
+        {
+            theMementos.add(item);
+        }
+        */
+        //TODO store();
     }
 
     public List<Item> getItemsByPropId(int propId) {
