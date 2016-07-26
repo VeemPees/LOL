@@ -1,5 +1,6 @@
 package com.veempees.lol;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,16 +9,22 @@ public class Item extends Memento  {
 
     boolean done;
 
-    public Item(String text)
+    public Item(String value)
     {
-        super(text);
+        super(value);
         done = false;
     }
 
-    public Item(Integer ID, String text, String quantity, String measurement, boolean done)
+    /*public Item(Integer ID, boolean isDone, String value, int qttID, int mmtID)
     {
-        super(ID, text, quantity, measurement);
-        this.done = done;
+        super(ID, value, qttID, mmtID);
+        this.done = isDone;
+    }*/
+
+    public Item(BigDecimal ID, boolean isDone, String value, BigDecimal qttID, BigDecimal mmtID)
+    {
+        super(ID, value, qttID, mmtID);
+        this.done = isDone;
     }
 
     public boolean isDone() {

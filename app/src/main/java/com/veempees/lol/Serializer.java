@@ -20,34 +20,7 @@ public class Serializer  {
             progress.setMessage("Calling Google Apps Script Execution API ...");
 
             new MakeRequestTask(Globals.getGlobals().getCredential(), progress, activity).execute();
-            Normalize();
         }
-    }
-
-    private void Normalize() {
-        /*for (Item item : theItems)
-        {
-            List<Integer> propsToRemove = new ArrayList<Integer>();
-            for (int propId : item.getPropertyIds())
-            {
-                if (isValidPropertyId(propId))
-                {
-                    // we are OK
-                }
-                else
-                {
-                    // invalid property id
-                    Logger.e("Invalid propery ID " + propId);
-                    propsToRemove.add(propId);
-                }
-            }
-
-            for (int id : propsToRemove)
-            {
-                item.RemoveProperty(id);
-            }
-        }*/
-
     }
 
     public void Upload(Activity activity)

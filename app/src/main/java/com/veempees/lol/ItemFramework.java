@@ -9,10 +9,8 @@ import static junit.framework.Assert.*;
 public class ItemFramework {
     private static ItemFramework instance;
     private List<Item> theItems;
-    private List<Property> theProperties;
-    private List<String> theQuantities;
-    private List<String> theMeasurements;
-    private List<Item> theMementos;
+
+
     private Serializer serializer;
 
     public static void initInstance()
@@ -34,6 +32,11 @@ public class ItemFramework {
     private ItemFramework()
     {
         serializer = new Serializer();
+        theItems = new ArrayList<>();
+        theMementos = new ArrayList<>();
+        theProps = new ArrayList<>();
+        theQtts = new ArrayList<>();
+        theMmts = new ArrayList<>();
     }
 
     public void reload(Activity activity)
@@ -41,60 +44,18 @@ public class ItemFramework {
         serializer.Download(activity);
     }
 
-    private boolean isValidPropertyId(int propId) {
-        for (Property prop : theProperties)
-        {
-            if (prop.getId() == propId)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public void store(Activity activity)
     {
         serializer.Upload(activity);
-    }
-
-    public Property getProperty(int propID) {
-        for (Property prop : theProperties)
-        {
-            if (prop.getId() == propID)
-            {
-                return prop;
-            }
-        }
-        //@pg TODO remove null
-        return null;
-    }
-
-    public List<Property> getProperties() {
-        return theProperties;
-    }
-
-    public void AddNewProperty(String value)
-    {
-        Property p = new Property(theProperties.size(), value);
-        theProperties.add(p);
     }
 
     public List<Item> getItems() {
         return theItems;
     }
 
-    private Item mementoOrItemExists(Item item, boolean memento)
+    private Item itemExists(Item item)
     {
-        List<Item> whereToLook;
-        if (memento)
-        {
-            whereToLook = theMementos;
-        }
-        else
-        {
-            whereToLook = theItems;
-        }
-        for (Item mi : whereToLook)
+        for (Item mi : theItems)
         {
             if (item.getText().compareToIgnoreCase(mi.getText()) == 0)
             {
@@ -103,6 +64,10 @@ public class ItemFramework {
         }
         return null;
     }
+
+
+
+
 
     /*
     public Item Add(String string, List<Property> newProps, String qty, String mmt) {
@@ -135,17 +100,8 @@ public class ItemFramework {
     }
     */
 
-    public void Add(Item item) {
-
-        theItems.add(item);
-        /* TODO check if to be added to mementos
-        Item existingMemento = mementoOrItemExists(item, true);
-        if (existingMemento == null)
-        {
-            theMementos.add(item);
-        }
-        */
-        //TODO store();
+    public void addItem(Item item) {
+       theItems.add(item);
     }
 
     public List<Item> getItemsByPropId(int propId) {
@@ -166,51 +122,11 @@ public class ItemFramework {
         return items;
     }
 
-    public void RemoveProperty(int propId) {
 
-        boolean alreadyFound = false;
 
-        for (int i = 0; i < theProperties.size(); i++)
-        {
-            Property p = theProperties.get(i);
 
-            assertTrue(p.getId() == i);
 
-            if (p.getId() == propId)
-            {
-                alreadyFound = true;
-            }
-            else
-            {
-                if (alreadyFound)
-                {
-                    p.setId(p.getId() - 1);
-                }
-            }
-        }
-        theProperties.remove(propId);
-    }
-
-    public int getPropertyCount(boolean countEmptyOnes)
-    {
-        if (countEmptyOnes)
-        {
-            return theProperties.size();
-        }
-        else
-        {
-            int count = 0;
-            for (Property p : theProperties)
-            {
-                if (!p.isEmpty())
-                {
-                    count++;
-                }
-            }
-            return count;
-        }
-    }
-
+    /*
     public int getPropertyId(int sequence, boolean countEmptyOnes) {
 
         Logger.i("Looking for the Id of the " + sequence + "th property" + (countEmptyOnes ? "" : " not counting empty ones"));
@@ -237,7 +153,7 @@ public class ItemFramework {
         assertTrue(propertiesToCount.size() > 0);
         assertTrue(propertiesToCount.size() >= sequence + 1);
         return propertiesToCount.get(sequence).getId();
-
+*/
 		/*
 		int currentPosition = 0;
 		EegLogger.l("Start on position 0");
@@ -276,8 +192,9 @@ public class ItemFramework {
 		assertTrue(false);
 		return 0;
 		*/
+/*
     }
-
+*/
     public int getItemCountByPropId(int propId)
     {
         return getItemsByPropId(propId).size();
@@ -308,19 +225,133 @@ public class ItemFramework {
         return 0;
     }
 
-    List<String> getQuantities()
+    /*
+    Qtt
+     */
+    private List<String> theQtts;
+
+    List<String> getQtts()
     {
-        return theQuantities;
+        return theQtts;
     }
 
-    List<String> getMeasurements()
+    void resetQtts()
     {
-        return theMeasurements;
+        theQtts.clear();
     }
 
-    List<Item> getMementos()
+    void addQtt(int index, String value)
+    {
+        assertTrue(index == theQtts.size());
+        theQtts.add(value);
+    }
+
+    String getQtt(int index)
+    {
+        assertTrue(index < theQtts.size());
+        return theQtts.get(index);
+    }
+
+    /*
+    Mmt
+     */
+    private List<String> theMmts;
+
+    List<String> getMmts()
+    {
+        return theMmts;
+    }
+
+    void resetMmts()
+    {
+        theMmts.clear();
+    }
+
+    void addMmt(int index, String value)
+    {
+        assertTrue(index == theMmts.size());
+        theMmts.add(value);
+    }
+
+    String getMmt(int index)
+    {
+        assertTrue(index < theMmts.size());
+        return theMmts.get(index);
+    }
+
+    /*
+    Props
+     */
+    private List<String> theProps;
+
+    List<String> getProps()
+    {
+        return theProps;
+    }
+
+    void resetProps()
+    {
+        theProps.clear();
+    }
+
+    public void addProp(int index, String value)
+    {
+        theProps.add(value);
+    }
+
+    String getProp(int index)
+    {
+        assertTrue(index < theProps.size());
+        return theProps.get(index);
+    }
+
+    public int getPropertyCount(boolean countEmptyOnes)
+    {
+        if (countEmptyOnes)
+        {
+            return theProps.size();
+        }
+        else
+        {
+            int count = 0;
+            for (String s : theProps)
+            {
+                if (!s.isEmpty())
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
+    }
+
+    public void RemoveProp(int index)
+    {
+        theProps.remove(index);
+    }
+
+    /*
+    Mementos
+     */
+    private List<Memento> theMementos;
+
+    List<Memento> getMementos()
     {
         return theMementos;
     }
 
+    void resetMementos()
+    {
+        theMementos.clear();
+    }
+
+    public void addMemento(Memento memento) {
+        theMementos.add(memento);
+    }
+
+    Memento getMemento(int index)
+    {
+        assertTrue(index < theMementos.size());
+        return theMementos.get(index);
+    }
 }

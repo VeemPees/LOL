@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -127,33 +128,76 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
             if (o instanceof String) {
 
             } else if (o instanceof ArrayList) {
-                ArrayList<ArrayList<Object>> ret = (ArrayList<ArrayList<Object>>)o;
-                for (ArrayList<Object> row : ret)
-                {
-                    // 0   1       2      3      4      5    6    7         8
-                    // ID, IsDone, QttID, MmtID, Value, Qtt, Mmt, PrpCount, ...
-                    Item item = new Item((Integer)row.get(0), (String)row.get(4), (String)row.get(5), (String)row.get(6), (boolean)row.get(1));
-                    for(int i = 0; i < (int)row.get(7); i++)
-                    {
-                        item.addProperty((Integer)row.get(8 + i));
+
+                // the data is sent in the following format
+                // item array
+                // memento array
+                // Qtt list
+                // Mmt list
+                // Property list
+                ArrayList<Object> ret = (ArrayList<Object>) o;
+
+                ArrayList<ArrayList<Object>> items = (ArrayList<ArrayList<Object>>) ret.get(0);
+
+                // items are sent in the following format
+                //  0  1       2      3      4      5          6
+                // ID, isDone, QttID, MmtID, Value, PropCount, [Props]
+                for (ArrayList<Object> row : items) {
+                    //  0  1       2      3      4      5          6
+                    // ID, isDone, QttID, MmtID, Value, PropCount, [Props]
+                    Item item = new Item((BigDecimal)row.get(0), (boolean)row.get(1), row.get(4).toString(), (BigDecimal)row.get(2), (BigDecimal)row.get(3));
+
+                    int propCount = ((BigDecimal)row.get(5)).intValue();
+
+                    for (int i = 0; i < propCount; i++) {
+                        item.addProperty((BigDecimal) row.get(6 + i));
                     }
-                    ItemFramework.getInstance().Add(item);
+                    ItemFramework.getInstance().addItem(item);
                 }
 
-            } else
-            {
+                ArrayList<ArrayList<Object>> mementos = (ArrayList<ArrayList<Object>>) ret.get(1);
 
+                // mementos are sent in the following format
+                //  0  1      2      3      4          5
+                // ID, QttID, MmtID, Value, PropCount, [Props]
+                for (ArrayList<Object> row : mementos) {
+                    //  0  1      2      3      4          5
+                    // ID, QttID, MmtID, Value, PropCount, [Props]
+                    Memento memento = new Memento((BigDecimal)row.get(0), row.get(3).toString(), (BigDecimal)row.get(1), (BigDecimal)row.get(2));
+
+                    int propCount = ((BigDecimal)row.get(4)).intValue();
+
+                    for (int i = 0; i < propCount; i++) {
+                        memento.addProperty((BigDecimal)row.get(5 + i));
+                    }
+                    ItemFramework.getInstance().addMemento(memento);
+                }
+
+
+                ArrayList<ArrayList<Object>> qtts = (ArrayList<ArrayList<Object>>) ret.get(2);
+
+                ItemFramework.getInstance().resetQtts();
+                for (ArrayList<Object> row : qtts) {
+                    BigDecimal bd = (BigDecimal) row.get(0);
+                    ItemFramework.getInstance().addQtt(bd.intValue(), row.get(1).toString());
+                }
+
+                ArrayList<ArrayList<Object>> mmts = (ArrayList<ArrayList<Object>>) ret.get(3);
+
+                ItemFramework.getInstance().resetMmts();
+                for (ArrayList<Object> row : mmts) {
+                    BigDecimal bd = (BigDecimal) row.get(0);
+                    ItemFramework.getInstance().addMmt(bd.intValue(), row.get(1).toString());
+                }
+
+                ArrayList<ArrayList<Object>> props = (ArrayList<ArrayList<Object>>) ret.get(4);
+
+                ItemFramework.getInstance().resetProps();
+                for (ArrayList<Object> row : props) {
+                    BigDecimal bd = (BigDecimal) row.get(0);
+                    ItemFramework.getInstance().addProp(bd.intValue(), row.get(1).toString());
+                }
             }
-            //ArrayList<String> items = (ArrayList<String>)o;
-                /*Map<String, String> folderSet =
-                        (Map<String, String>)(op.getResponse().get("result"));
-
-                for (String id: folderSet.keySet()) {
-                    folderList.add(
-                            String.format("%s (%s)", folderSet.get(id), id));
-                }
-                */
-            //folderList = items;
         }
 
         return null;
@@ -214,6 +258,7 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
             output.add(0, "Data retrieved using the Google Apps Script Execution API:");
             Logger.i(TextUtils.join("\n", output));
         }
+        Toast.makeText(mActivity, "Done", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -231,6 +276,7 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
             } else {
                 Logger.e("The following error occurred:\n"
                         + mLastError.getMessage());
+                Toast.makeText(mActivity, mLastError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         } else {
             Logger.i("Request cancelled.");
