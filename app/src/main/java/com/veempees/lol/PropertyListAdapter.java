@@ -2,6 +2,7 @@ package com.veempees.lol;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,39 +27,68 @@ public class PropertyListAdapter extends BaseExpandableListAdapter {
     }
 
     private final Context ctx;
+    private boolean showEmptyPropertyGroups = false;
+    private boolean hideAdditionalProperties = false;
+    private boolean showQtyBeforeItem = true;
+    private boolean showCountAfterProperty = true;
 
-    public PropertyListAdapter(Context context) {
+    public PropertyListAdapter(Context context, SharedPreferences sharedPrefs) {
         this.ctx = context;
+        renderingPropertiesChanged(sharedPrefs);
+    }
+
+    public void renderingPropertiesChanged(SharedPreferences sharedPrefs)
+    {
+        this.showEmptyPropertyGroups = sharedPrefs.getBoolean(Constants.PREF_SHOW_EMPTY_PROPERTY_GROUPS, false);
+        this.hideAdditionalProperties = sharedPrefs.getBoolean(Constants.PREF_SHOW_ADDITIONAL_PROPERTIES_IN_ITEM, false);
+        this.showQtyBeforeItem = sharedPrefs.getBoolean(Constants.PREF_SHOW_QUANTITY_BEFORE_ITEM, true);
+        this.showCountAfterProperty = sharedPrefs.getBoolean(Constants.PREF_SHOW_COUNT_AFTER_PROPERTY, true);
     }
 
     @Override
-    public int getGroupCount() {
-        return 4;
+    public int getGroupCount()
+    {
+        // one group is one property
+        // how many properties exist?
+        return ItemFramework.getInstance().getPropertyCount(true);
     }
 
     @Override
-    public int getChildrenCount(int groupPosition) {
-        return 3;
+    public int getChildrenCount(int groupPosition)
+    {
+        // one group is one property
+        // the number of items belonging to this property
+        return ItemFramework.getInstance().getItemCountByPropId(getGroupId(groupPosition));
+    }
+
+    public int propertyIdFromGroupPosition(int groupPosition)
+    {
+        return groupPosition;
     }
 
     @Override
-    public Object getGroup(int groupPosition) {
-        return null;
+    public Object getGroup(int groupPosition)
+    {
+        return ItemFramework.getInstance().getProp(getGroupId(groupPosition));
     }
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        return null;
+        return ItemFramework.getInstance().getItemById(getChildId(groupPosition, childPosition));
     }
 
     @Override
-    public long getGroupId(int groupPosition) {
-        return 0;
+    public long getGroupId(int groupPosition)
+    {
+        // TODO right now use the group position as the property ID
+        return groupPosition;
     }
 
     @Override
-    public long getChildId(int groupPosition, int childPosition) {
-        return 0;
+    public long getChildId(int groupPosition, int childPosition)
+    {
+        long groupID = getGroupId(groupPosition);
+        return ItemFramework.getInstance().getItemIDByGroupAndPosition(groupID, childPosition);
     }
 
     @Override
@@ -78,18 +108,14 @@ public class PropertyListAdapter extends BaseExpandableListAdapter {
 
         GroupViewHolder holder = (GroupViewHolder) row.getTag();
 
-        //TODOProperty prop = (Property) getGroup(groupPosition);
+        String groupText = (String)getGroup(groupPosition);
 
-        //TODOString groupText = prop.getValue();
-        String groupText = "Group";
-
-        /*TODO
-        if (this.showQtyAfterProperty)
+        if (this.showCountAfterProperty)
         {
             groupText += " (";
             groupText += getChildrenCount(groupPosition);
             groupText += ")";
-        }*/
+        }
         holder.txtTitle.setText(groupText);
 
         return row;
@@ -129,15 +155,15 @@ public class PropertyListAdapter extends BaseExpandableListAdapter {
         holder.txtTitle.setText("Child");
         holder.txtPropList.setText("Props");
         holder.chkTick.setChecked(true);
-        /*TODO
-        Property prop = (Property) getGroup(groupPosition);
 
-        Item i = (Item) getChild(groupPosition, childPosition);
+        String prop = (String)getGroup(groupPosition);
 
-        holder.txtTitle.setText(createItemText(i));*/
+        Item i = (Item)getChild(groupPosition, childPosition);
+
+        holder.txtTitle.setText(i.getText());
 
 
-        /*TODO if (!this.hideAdditionalProperties)
+        /*TODO if (this.showAdditionalProperties)
         {
             String propList = "";
 
@@ -156,9 +182,9 @@ public class PropertyListAdapter extends BaseExpandableListAdapter {
         {
             holder.txtPropList.setVisibility(View.INVISIBLE);
         }
-        //holder.chkTick.setTag(i);
-        holder.chkTick.setChecked(i.isDone());
         */
+        holder.chkTick.setTag(i);
+        holder.chkTick.setChecked(i.isDone());
         return row;
     }
 

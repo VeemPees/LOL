@@ -41,18 +41,33 @@ public class ItemFramework {
 
     public void reload(Activity activity)
     {
+        resetQtts();
+        resetProps();
+        resetMmts();
+        resetMementos();
+        resetItems();
         serializer.Download(activity);
     }
 
+    private void resetItems()
+    {
+        theItems.clear();
+    }
+
+/*
     public void store(Activity activity)
     {
         serializer.Upload(activity);
     }
+*/
 
+/*
     public List<Item> getItems() {
         return theItems;
     }
+*/
 
+/*
     private Item itemExists(Item item)
     {
         for (Item mi : theItems)
@@ -64,6 +79,7 @@ public class ItemFramework {
         }
         return null;
     }
+*/
 
 
 
@@ -195,14 +211,34 @@ public class ItemFramework {
 /*
     }
 */
-    public int getItemCountByPropId(int propId)
+    public int getItemCountByPropId(long propId)
     {
-        return getItemsByPropId(propId).size();
+        return getItemsByPropId((int)propId).size();
     }
 
-    public Item getItemById(int id) {
+    public Item getItemById(long id) {
         //@pg currently the ID is the position
-        return theItems.get(id);
+        return theItems.get((int) id);
+    }
+
+    public int getItemIDByGroupAndPosition(long propID, int childPosition)
+    {
+        List<Item> items = getItemsByPropId((int)propID);
+        Item it = items.get(childPosition);
+
+        //@pg currently the ID is the position
+        // now find out the position of this item in the big list
+        for (int i = 0; i < theItems.size(); i++)
+        {
+            if (theItems.get(i) == it)
+            {
+                return i;
+            }
+        }
+
+        // if we are here, we are doomed
+        assertTrue(false);
+        return 0;
     }
 
     public int getChildId(int propId, int sequence)
@@ -299,30 +335,15 @@ public class ItemFramework {
         theProps.add(value);
     }
 
-    String getProp(int index)
+    String getProp(long index)
     {
         assertTrue(index < theProps.size());
-        return theProps.get(index);
+        return theProps.get((int)index);
     }
 
     public int getPropertyCount(boolean countEmptyOnes)
     {
-        if (countEmptyOnes)
-        {
-            return theProps.size();
-        }
-        else
-        {
-            int count = 0;
-            for (String s : theProps)
-            {
-                if (!s.isEmpty())
-                {
-                    count++;
-                }
-            }
-            return count;
-        }
+        return theProps.size();
     }
 
     public void RemoveProp(int index)

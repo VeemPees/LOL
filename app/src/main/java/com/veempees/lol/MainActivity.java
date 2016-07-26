@@ -30,17 +30,25 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (Globals.getGlobals().isGooglePlayServicesAvailable(MainActivity.this)) {
+                    refreshResults();
+                } else {
+                    //TODO
+                    Logger.e("Google Play Services required: " +
+                            "after installing, close and relaunch this app.");
+                }
+
+/*
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+*/
             }
         });
-
-
 
         SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
         Globals.getGlobals().initCredentials(settings.getString(Constants.PREF_ACCOUNT_NAME, null));
 
-        this.adapter = new PropertyListAdapter(this);
+        this.adapter = new PropertyListAdapter(this, settings);
         final ExpandableListView propertyList = (ExpandableListView) findViewById(R.id.mainList);
         propertyList.setAdapter(this.adapter);
     }
@@ -57,14 +65,33 @@ public class MainActivity extends AppCompatActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+        Intent myIntent;
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+        switch(item.getItemId())
+        {
+            /*case R.id.action_add_item:
+                myIntent = new Intent(MainActivity.this, ItemEntryActivity.class);
+                startActivityForResult(myIntent, Constants.DummyRequestCode);
+                break;
 
-        return super.onOptionsItemSelected(item);
+            case R.id.action_edit_properties:
+                myIntent = new Intent(MainActivity.this, PropertyAddRemoveActivity.class);
+                startActivityForResult(myIntent, Constants.DummyRequestCode);
+                break;*/
+
+            case R.id.action_settings:
+                myIntent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivityForResult(myIntent, Constants.DummyRequestCode);
+                break;
+
+            /*case R.id.action_test_drive:
+                DummyGDTest();
+                break;*/
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
     }
 
     @Override
@@ -112,13 +139,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (Globals.getGlobals().isGooglePlayServicesAvailable(this)) {
-            refreshResults();
-        } else {
-            //TODO
-            Logger.e("Google Play Services required: " +
-                    "after installing, close and relaunch this app.");
-        }
     }
 
 

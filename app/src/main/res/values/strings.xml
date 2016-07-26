@@ -1,5 +1,28 @@
 <resources>
     <string name="app_name">LOL</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_settings">Settings</string>
     <string name="XXXXXXXX">XXXXXXXX</string>
+
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_show_empty_property_groups">Empty property groups</string>
+    <string name="pref_description_show_empty_property_groups">Show or hide the empty property groups.
+    </string>
+
+    <string name="pref_title_show_additional_properties_in_item">Other properties</string>
+    <string name="pref_description_show_additional_properties_in_item">Show or hide the other properties in the item.
+    </string>
+
+    <string name="pref_title_show_quantity_before_item">Quantity before item</string>
+    <string name="pref_description_show_quantity_before_item">Show or hide the quantity before the item.
+    </string>
+
+    <string name="pref_title_show_count_after_group">Count in group</string>
+    <string name="pref_description_show_count_after_group">Show or hide the item count after the group.
+    </string>
+
 </resources>

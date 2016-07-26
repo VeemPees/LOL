@@ -173,10 +173,8 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
                     ItemFramework.getInstance().addMemento(memento);
                 }
 
-
                 ArrayList<ArrayList<Object>> qtts = (ArrayList<ArrayList<Object>>) ret.get(2);
 
-                ItemFramework.getInstance().resetQtts();
                 for (ArrayList<Object> row : qtts) {
                     BigDecimal bd = (BigDecimal) row.get(0);
                     ItemFramework.getInstance().addQtt(bd.intValue(), row.get(1).toString());
@@ -184,7 +182,6 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
 
                 ArrayList<ArrayList<Object>> mmts = (ArrayList<ArrayList<Object>>) ret.get(3);
 
-                ItemFramework.getInstance().resetMmts();
                 for (ArrayList<Object> row : mmts) {
                     BigDecimal bd = (BigDecimal) row.get(0);
                     ItemFramework.getInstance().addMmt(bd.intValue(), row.get(1).toString());
@@ -192,7 +189,6 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
 
                 ArrayList<ArrayList<Object>> props = (ArrayList<ArrayList<Object>>) ret.get(4);
 
-                ItemFramework.getInstance().resetProps();
                 for (ArrayList<Object> row : props) {
                     BigDecimal bd = (BigDecimal) row.get(0);
                     ItemFramework.getInstance().addProp(bd.intValue(), row.get(1).toString());
@@ -259,6 +255,9 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
             Logger.i(TextUtils.join("\n", output));
         }
         Toast.makeText(mActivity, "Done", Toast.LENGTH_SHORT).show();
+        if (mActivity instanceof MainActivity) {
+            ((MainActivity)mActivity).adapter.notifyDataSetChanged();
+        }
     }
 
     @Override
