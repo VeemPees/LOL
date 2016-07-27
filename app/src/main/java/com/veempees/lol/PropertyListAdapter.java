@@ -39,10 +39,10 @@ public class PropertyListAdapter extends BaseExpandableListAdapter {
 
     public void renderingPropertiesChanged(SharedPreferences sharedPrefs)
     {
-        this.showEmptyPropertyGroups = sharedPrefs.getBoolean(Constants.PREF_SHOW_EMPTY_PROPERTY_GROUPS, false);
+        /*this.showEmptyPropertyGroups = sharedPrefs.getBoolean(Constants.PREF_SHOW_EMPTY_PROPERTY_GROUPS, false);
         this.hideAdditionalProperties = sharedPrefs.getBoolean(Constants.PREF_SHOW_ADDITIONAL_PROPERTIES_IN_ITEM, false);
         this.showQtyBeforeItem = sharedPrefs.getBoolean(Constants.PREF_SHOW_QUANTITY_BEFORE_ITEM, true);
-        this.showCountAfterProperty = sharedPrefs.getBoolean(Constants.PREF_SHOW_COUNT_AFTER_PROPERTY, true);
+        this.showCountAfterProperty = sharedPrefs.getBoolean(Constants.PREF_SHOW_COUNT_AFTER_PROPERTY, true);*/
     }
 
     @Override
@@ -50,7 +50,7 @@ public class PropertyListAdapter extends BaseExpandableListAdapter {
     {
         // one group is one property
         // how many properties exist?
-        return ItemFramework.getInstance().getPropertyCount(true);
+        return ItemFramework.getInstance().getPropertyCount(this.showEmptyPropertyGroups);
     }
 
     @Override
@@ -160,7 +160,7 @@ public class PropertyListAdapter extends BaseExpandableListAdapter {
 
         Item i = (Item)getChild(groupPosition, childPosition);
 
-        holder.txtTitle.setText(i.getText());
+        holder.txtTitle.setText(createItemText(i));
 
 
         /*TODO if (this.showAdditionalProperties)
@@ -186,6 +186,57 @@ public class PropertyListAdapter extends BaseExpandableListAdapter {
         holder.chkTick.setTag(i);
         holder.chkTick.setChecked(i.isDone());
         return row;
+    }
+
+    private String createItemText(Item i)
+    {
+        String title;
+
+        if (this.showQtyBeforeItem)
+        {
+            title = "";
+        }
+        else
+        {
+            title = i.getText();
+        }
+
+        if (i.getQtty().length() > 0)
+        {
+            if (this.showQtyBeforeItem)
+            {
+                title += i.getQtty();
+                title += " ";
+            }
+            else
+            {
+                title += " ";
+                title += i.getQtty();
+            }
+        }
+        if (i.getMmt().length() > 0)
+        {
+            if (this.showQtyBeforeItem)
+            {
+                title += i.getMmt();
+                title += " ";
+            }
+            else
+            {
+                title += " ";
+                title += i.getMmt();
+            }
+        }
+        if (this.showQtyBeforeItem)
+        {
+            title += i.getText();
+        }
+        else
+        {
+            // we are done
+        }
+
+        return title;
     }
 
     @Override

@@ -81,10 +81,7 @@ public class MainActivity extends AppCompatActivity {
                 break;*/
 
             case R.id.action_settings:
-                myIntent = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivityForResult(myIntent, Constants.DummyRequestCode);
                 break;
-
             /*case R.id.action_test_drive:
                 DummyGDTest();
                 break;*/
@@ -125,6 +122,13 @@ public class MainActivity extends AppCompatActivity {
                     chooseAccount();
                 }
                 break;
+            case Constants.DummyRequestCode:
+                SharedPreferences sharedPrefs = getPreferences(Context.MODE_PRIVATE);
+                this.adapter.renderingPropertiesChanged(sharedPrefs);
+                this.adapter.notifyDataSetChanged();
+                break;
+            default:
+
         }
     }
 

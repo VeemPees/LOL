@@ -343,6 +343,7 @@ public class ItemFramework {
 
     public int getPropertyCount(boolean countEmptyOnes)
     {
+        // TODO correctly handle countEmptyOnes
         return theProps.size();
     }
 
