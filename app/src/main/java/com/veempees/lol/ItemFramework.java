@@ -218,6 +218,7 @@ public class ItemFramework {
 
     public Item getItemById(long id) {
         //@pg currently the ID is the position
+        // TODO currently the ID is the position
         return theItems.get((int) id);
     }
 
@@ -227,26 +228,7 @@ public class ItemFramework {
         Item it = items.get(childPosition);
 
         //@pg currently the ID is the position
-        // now find out the position of this item in the big list
-        for (int i = 0; i < theItems.size(); i++)
-        {
-            if (theItems.get(i) == it)
-            {
-                return i;
-            }
-        }
-
-        // if we are here, we are doomed
-        assertTrue(false);
-        return 0;
-    }
-
-    public int getChildId(int propId, int sequence)
-    {
-        List<Item> items = getItemsByPropId(propId);
-        Item it = items.get(sequence);
-
-        //@pg currently the ID is the position
+        // TODO currently the ID is the position
         // now find out the position of this item in the big list
         for (int i = 0; i < theItems.size(); i++)
         {
@@ -318,9 +300,9 @@ public class ItemFramework {
     /*
     Props
      */
-    private List<String> theProps;
+    private List<Property> theProps;
 
-    List<String> getProps()
+    List<Property> getProps()
     {
         return theProps;
     }
@@ -330,26 +312,57 @@ public class ItemFramework {
         theProps.clear();
     }
 
-    public void addProp(int index, String value)
+    public void addProp(int ID, String value)
     {
-        theProps.add(value);
+        Property p = new Property(ID, value);
+        theProps.add(p);
     }
 
-    String getProp(long index)
+    int getPropIdFromPosition(int pos)
     {
-        assertTrue(index < theProps.size());
-        return theProps.get((int)index);
+        return theProps.get(pos).getId();
+    }
+
+    Property getProp(long ID)
+    {
+        for (Property p : theProps)
+        {
+            if (p.getId() == ID)
+            {
+                return p;
+            }
+        }
+        Logger.e("Property not found");
+        return null;
     }
 
     public int getPropertyCount(boolean countEmptyOnes)
     {
-        // TODO correctly handle countEmptyOnes
-        return theProps.size();
+        if (countEmptyOnes)
+        {
+            return theProps.size();
+        }
+        int count = 0;
+        for (Property p : theProps)
+        {
+            if (!p.isEmpty())
+            {
+                count++;
+            }
+        }
+        return count;
     }
 
-    public void RemoveProp(int index)
+    public void RemoveProp(int ID)
     {
-        theProps.remove(index);
+        for (Property p : theProps)
+        {
+            if (p.getId() == ID)
+            {
+                theProps.remove(p);
+                return;
+            }
+        }
     }
 
     /*

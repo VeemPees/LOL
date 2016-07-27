@@ -33,7 +33,6 @@ public class Property {
 
     public boolean isEmpty()
     {
-        //TODO return ItemFramework.getInstance().getItemsByPropId(this.getId()).size() == 0;
-        return false;
+        return ItemFramework.getInstance().getItemsByPropId(this.getId()).size() == 0;
     }
 }

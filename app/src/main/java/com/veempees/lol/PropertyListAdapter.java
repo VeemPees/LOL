@@ -50,7 +50,9 @@ public class PropertyListAdapter extends BaseExpandableListAdapter {
     {
         // one group is one property
         // how many properties exist?
-        return ItemFramework.getInstance().getPropertyCount(this.showEmptyPropertyGroups);
+        int count = ItemFramework.getInstance().getPropertyCount(this.showEmptyPropertyGroups);
+        Logger.i(String.format("There are %d Props" + (this.showEmptyPropertyGroups ? "" : " with content"), count));
+        return count;
     }
 
     @Override
@@ -58,37 +60,41 @@ public class PropertyListAdapter extends BaseExpandableListAdapter {
     {
         // one group is one property
         // the number of items belonging to this property
-        return ItemFramework.getInstance().getItemCountByPropId(getGroupId(groupPosition));
-    }
-
-    public int propertyIdFromGroupPosition(int groupPosition)
-    {
-        return groupPosition;
+        int count = ItemFramework.getInstance().getItemCountByPropId(getGroupId(groupPosition));
+        Logger.i(String.format("There are %d items in the %dth group", count, groupPosition));
+        return count;
     }
 
     @Override
     public Object getGroup(int groupPosition)
     {
-        return ItemFramework.getInstance().getProp(getGroupId(groupPosition));
+        Property p = ItemFramework.getInstance().getProp(getGroupId(groupPosition));
+        Logger.i(String.format("The %dth Prop is %s", groupPosition, p.toString()));
+        return p;
     }
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        return ItemFramework.getInstance().getItemById(getChildId(groupPosition, childPosition));
+        Item i = ItemFramework.getInstance().getItemById(getChildId(groupPosition, childPosition));
+        Logger.i(String.format("The %dth Prop's %dth Item is %s", groupPosition, childPosition, i.toString()));
+        return i;
     }
 
     @Override
     public long getGroupId(int groupPosition)
     {
-        // TODO right now use the group position as the property ID
-        return groupPosition;
+        int ID = ItemFramework.getInstance().getPropIdFromPosition(groupPosition);
+        Logger.i(String.format("The ID of the %dth Prop is %d", groupPosition, ID));
+        return ID;
     }
 
     @Override
     public long getChildId(int groupPosition, int childPosition)
     {
         long groupID = getGroupId(groupPosition);
-        return ItemFramework.getInstance().getItemIDByGroupAndPosition(groupID, childPosition);
+        int ID = ItemFramework.getInstance().getItemIDByGroupAndPosition(groupID, childPosition);
+        Logger.i(String.format("The ID of the %dth Prop's %dth Item is %d", groupPosition, childPosition, ID));
+        return ID;
     }
 
     @Override
@@ -108,7 +114,8 @@ public class PropertyListAdapter extends BaseExpandableListAdapter {
 
         GroupViewHolder holder = (GroupViewHolder) row.getTag();
 
-        String groupText = (String)getGroup(groupPosition);
+        Property p = (Property)getGroup(groupPosition);
+        String groupText = p.getValue();
 
         if (this.showCountAfterProperty)
         {
@@ -155,8 +162,6 @@ public class PropertyListAdapter extends BaseExpandableListAdapter {
         holder.txtTitle.setText("Child");
         holder.txtPropList.setText("Props");
         holder.chkTick.setChecked(true);
-
-        String prop = (String)getGroup(groupPosition);
 
         Item i = (Item)getChild(groupPosition, childPosition);
 
