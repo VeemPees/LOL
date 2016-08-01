@@ -2,6 +2,7 @@ package com.veempees.lol;
 
 import android.app.Activity;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import static junit.framework.Assert.*;
@@ -9,6 +10,7 @@ import static junit.framework.Assert.*;
 public class ItemFramework {
     private static ItemFramework instance;
     private List<Item> theItems;
+    int nextItemID;
 
 
     private Serializer serializer;
@@ -47,11 +49,19 @@ public class ItemFramework {
         resetMementos();
         resetItems();
         serializer.Download(activity);
+        nextItemID = Constants.NEXT_ITEM_INDEX_START;
     }
 
     private void resetItems()
     {
         theItems.clear();
+    }
+
+    BigDecimal generateID()
+    {
+        nextItemID++;
+        BigDecimal bd = new BigDecimal(nextItemID);
+        return bd;
     }
 
 /*
@@ -138,7 +148,16 @@ public class ItemFramework {
         return items;
     }
 
-
+    public boolean doesItemExist(String value)
+    {
+        for (Item i : theItems)
+        {
+            if (value.equalsIgnoreCase(i.getValue())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 
 
@@ -258,9 +277,9 @@ public class ItemFramework {
         theQtts.clear();
     }
 
-    void addQtt(int index, String value)
+    void addQtt(int ID, String value)
     {
-        assertTrue(index == theQtts.size());
+        assertTrue(ID == theQtts.size());
         theQtts.add(value);
     }
 
@@ -268,6 +287,19 @@ public class ItemFramework {
     {
         assertTrue(index < theQtts.size());
         return theQtts.get(index);
+    }
+
+    int lookUpQtt(String value)
+    {
+        for (int i = 0; i < theQtts.size(); i++)
+        {
+            if (value.equalsIgnoreCase(theQtts.get(i)))
+            {
+                return i;
+            }
+        }
+        Logger.e(String.format("%s does not exist"));
+        return -1;
     }
 
     /*
@@ -295,6 +327,19 @@ public class ItemFramework {
     {
         assertTrue(index < theMmts.size());
         return theMmts.get(index);
+    }
+
+    int lookUpMmt(String value)
+    {
+        for (int i = 0; i < theMmts.size(); i++)
+        {
+            if (value.equalsIgnoreCase(theMmts.get(i)))
+            {
+                return i;
+            }
+        }
+        Logger.e(String.format("%s does not exist"));
+        return -1;
     }
 
     /*

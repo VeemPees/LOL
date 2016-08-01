@@ -15,5 +15,6 @@ public interface Constants {
     String PREF_SHOW_QUANTITY_BEFORE_ITEM = "show_quantity_before_item";
     String PREF_SHOW_COUNT_AFTER_PROPERTY = "show_count_after_group";
 
-    int DummyRequestCode = 11;
+    int DUMMY_REQUEST_CODE = 11;
+    int NEXT_ITEM_INDEX_START = 64000;
 }

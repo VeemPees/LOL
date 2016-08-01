@@ -2,9 +2,6 @@ package com.veempees.lol;
 
 import android.util.Log;
 
-/**
- * Created by Pesti_Gabor on 3/16/2016.
- */
 public class Logger {
     public static void i(String s)
     {

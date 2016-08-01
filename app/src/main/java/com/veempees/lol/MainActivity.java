@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.refreshList);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -42,6 +42,17 @@ public class MainActivity extends AppCompatActivity {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
 */
+            }
+        });
+
+        FloatingActionButton fab2 = (FloatingActionButton) findViewById(R.id.addItem);
+        fab2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent myIntent = new Intent(MainActivity.this, ItemEntryActivity.class);
+                startActivityForResult(myIntent, Constants.DUMMY_REQUEST_CODE);
+
             }
         });
 
@@ -72,12 +83,12 @@ public class MainActivity extends AppCompatActivity {
         {
             /*case R.id.action_add_item:
                 myIntent = new Intent(MainActivity.this, ItemEntryActivity.class);
-                startActivityForResult(myIntent, Constants.DummyRequestCode);
+                startActivityForResult(myIntent, Constants.DUMMY_REQUEST_CODE);
                 break;
 
             case R.id.action_edit_properties:
                 myIntent = new Intent(MainActivity.this, PropertyAddRemoveActivity.class);
-                startActivityForResult(myIntent, Constants.DummyRequestCode);
+                startActivityForResult(myIntent, Constants.DUMMY_REQUEST_CODE);
                 break;*/
 
             case R.id.action_settings:
@@ -122,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
                     chooseAccount();
                 }
                 break;
-            case Constants.DummyRequestCode:
+            case Constants.DUMMY_REQUEST_CODE:
                 SharedPreferences sharedPrefs = getPreferences(Context.MODE_PRIVATE);
                 this.adapter.renderingPropertiesChanged(sharedPrefs);
                 this.adapter.notifyDataSetChanged();

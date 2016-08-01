@@ -53,10 +53,10 @@ public class Memento {
     @Override
     public String toString()
     {
-        return getText();
+        return getValue();
     }
 
-    public String getText() {
+    public String getValue() {
         return value;
     }
 

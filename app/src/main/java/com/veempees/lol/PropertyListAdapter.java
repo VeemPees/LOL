@@ -28,7 +28,7 @@ public class PropertyListAdapter extends BaseExpandableListAdapter {
 
     private final Context ctx;
     private boolean showEmptyPropertyGroups = false;
-    private boolean hideAdditionalProperties = false;
+    private boolean showAdditionalProperties = true;
     private boolean showQtyBeforeItem = true;
     private boolean showCountAfterProperty = true;
 
@@ -40,7 +40,7 @@ public class PropertyListAdapter extends BaseExpandableListAdapter {
     public void renderingPropertiesChanged(SharedPreferences sharedPrefs)
     {
         /*this.showEmptyPropertyGroups = sharedPrefs.getBoolean(Constants.PREF_SHOW_EMPTY_PROPERTY_GROUPS, false);
-        this.hideAdditionalProperties = sharedPrefs.getBoolean(Constants.PREF_SHOW_ADDITIONAL_PROPERTIES_IN_ITEM, false);
+        this.showAdditionalProperties = sharedPrefs.getBoolean(Constants.PREF_SHOW_ADDITIONAL_PROPERTIES_IN_ITEM, false);
         this.showQtyBeforeItem = sharedPrefs.getBoolean(Constants.PREF_SHOW_QUANTITY_BEFORE_ITEM, true);
         this.showCountAfterProperty = sharedPrefs.getBoolean(Constants.PREF_SHOW_COUNT_AFTER_PROPERTY, true);*/
     }
@@ -155,26 +155,24 @@ public class PropertyListAdapter extends BaseExpandableListAdapter {
 
         }
 
-
         ChildViewHolder holder = (ChildViewHolder) row.getTag();
 
-
-        holder.txtTitle.setText("Child");
-        holder.txtPropList.setText("Props");
-        holder.chkTick.setChecked(true);
+        //holder.txtTitle.setText("Child");
+        //holder.txtPropList.setText("Props");
+        //holder.chkTick.setChecked(true);
 
         Item i = (Item)getChild(groupPosition, childPosition);
 
         holder.txtTitle.setText(createItemText(i));
 
 
-        /*TODO if (this.showAdditionalProperties)
+        if (this.showAdditionalProperties)
         {
             String propList = "";
 
             for (int propId : i.getPropertyIds()) {
-                if (prop.getId() != propId) {
-                    propList += ItemFramework.getInstance().getProperty(propId)
+                if (getGroupId(groupPosition) != propId) { // do not show this one
+                    propList += ItemFramework.getInstance().getProp(propId)
                             .getValue();
                     propList += " ";
                 }
@@ -187,7 +185,7 @@ public class PropertyListAdapter extends BaseExpandableListAdapter {
         {
             holder.txtPropList.setVisibility(View.INVISIBLE);
         }
-        */
+
         holder.chkTick.setTag(i);
         holder.chkTick.setChecked(i.isDone());
         return row;
@@ -203,7 +201,7 @@ public class PropertyListAdapter extends BaseExpandableListAdapter {
         }
         else
         {
-            title = i.getText();
+            title = i.getValue();
         }
 
         if (i.getQtty().length() > 0)
@@ -234,7 +232,7 @@ public class PropertyListAdapter extends BaseExpandableListAdapter {
         }
         if (this.showQtyBeforeItem)
         {
-            title += i.getText();
+            title += i.getValue();
         }
         else
         {

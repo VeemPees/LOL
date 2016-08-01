@@ -3,6 +3,8 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_settings">Settings</string>
     <string name="XXXXXXXX">XXXXXXXX</string>
+    <string name="btn_next_new_item">Next</string>
+    <string name="item_already_exists">This item already exists</string>
 
     <!-- Strings related to Settings -->
 
