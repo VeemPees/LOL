@@ -318,9 +318,27 @@ public class ItemFramework {
         theProps.add(p);
     }
 
-    int getPropIdFromPosition(int pos)
+    int getPropIdFromPosition(int pos, boolean countEmptyOnes)
     {
-        return theProps.get(pos).getId();
+        if (countEmptyOnes)
+        {
+            return theProps.get(pos).getId();
+        }
+        int count = 0;
+        for (Property p : theProps)
+        {
+            if (!p.isEmpty())
+            {
+                if (pos == count)
+                {
+                    return p.getId();
+                }
+                count++;
+            }
+        }
+        // TODO we should never end up here, but...
+        Logger.e("Property not found");
+        return 0;
     }
 
     Property getProp(long ID)

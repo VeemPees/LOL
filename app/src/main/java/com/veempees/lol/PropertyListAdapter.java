@@ -83,7 +83,7 @@ public class PropertyListAdapter extends BaseExpandableListAdapter {
     @Override
     public long getGroupId(int groupPosition)
     {
-        int ID = ItemFramework.getInstance().getPropIdFromPosition(groupPosition);
+        int ID = ItemFramework.getInstance().getPropIdFromPosition(groupPosition, this.showEmptyPropertyGroups);
         Logger.i(String.format("The ID of the %dth Prop is %d", groupPosition, ID));
         return ID;
     }
