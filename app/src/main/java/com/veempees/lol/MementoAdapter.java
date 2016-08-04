@@ -37,7 +37,7 @@ public class MementoAdapter extends BaseAdapter implements Filterable {
             {
                 for (Memento m : ItemFramework.getInstance().getMementos())
                 {
-                    if (m.getValue().contains(constraint))
+                    if (m.getValue().toLowerCase().contains(constraint.toString().toLowerCase()))
                     {
                         results.add(m);
                     }
