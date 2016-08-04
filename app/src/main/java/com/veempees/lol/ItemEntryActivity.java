@@ -1,7 +1,6 @@
 package com.veempees.lol;
 
 import android.content.Context;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -23,8 +22,8 @@ import java.util.List;
 public class ItemEntryActivity extends AppCompatActivity {
 
     AutoCompleteTextView editItem;
-    Spinner spnQuantity;
-    Spinner spnMeasurement;
+    Spinner spnQtt;
+    Spinner spnMmt;
     List<Spinner> spnProps;
     TextView btnAddProperty;
     TextView btnRemoveProperty;
@@ -52,11 +51,11 @@ public class ItemEntryActivity extends AppCompatActivity {
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(editItem, InputMethodManager.SHOW_IMPLICIT);
 
-        spnQuantity = (Spinner) findViewById(R.id.spinnerQuantity);
+        spnQtt = (Spinner) findViewById(R.id.spinnerQuantity);
 
         CreateQttList();
 
-        spnMeasurement = (Spinner) findViewById(R.id.spinnerMeasurement);
+        spnMmt = (Spinner) findViewById(R.id.spinnerMeasurement);
 
         CreateMmtList();
 
@@ -117,14 +116,36 @@ public class ItemEntryActivity extends AppCompatActivity {
         {
             // this is a problem, but we can survive
             AddOneProperty("");
-            return;
+        } else {
+
+            for (int propId : itemOrMemento.getPropertyIds()) {
+                Property prop = ItemFramework.getInstance().getProp(propId);
+                AddOneProperty(prop.getValue());
+            }
         }
 
-        for (int propId : itemOrMemento.getPropertyIds())
+        // adjust the Qtt
+        for (int i = 0; i < spnQtt.getAdapter().getCount(); i++)
         {
-            Property prop = ItemFramework.getInstance().getProp(propId);
-            AddOneProperty(prop.getValue());
+            String s = (String)spnQtt.getItemAtPosition(i);
+            if (s.equalsIgnoreCase(itemOrMemento.getQtty()))
+            {
+                spnQtt.setSelection(i);
+                break;
+            }
         }
+
+        // adjust the Mmt
+        for (int i = 0; i < spnMmt.getAdapter().getCount(); i++)
+        {
+            String s = (String)spnMmt.getItemAtPosition(i);
+            if (s.equalsIgnoreCase(itemOrMemento.getMmt()))
+            {
+                spnMmt.setSelection(i);
+                break;
+            }
+        }
+
     }
 
     private void CreateQttList() {
@@ -133,7 +154,7 @@ public class ItemEntryActivity extends AppCompatActivity {
 
         qtyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        spnQuantity.setAdapter(qtyAdapter);
+        spnQtt.setAdapter(qtyAdapter);
     }
 
 
@@ -142,7 +163,7 @@ public class ItemEntryActivity extends AppCompatActivity {
 
         mmtAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        spnMeasurement.setAdapter(mmtAdapter);
+        spnMmt.setAdapter(mmtAdapter);
 
     }
 
@@ -180,8 +201,19 @@ public class ItemEntryActivity extends AppCompatActivity {
         spnProps.remove(newSpinnerCount);
     }
 
-    private void Reset() {
+    private void Reset()
+    {
         editItem.setText("");
+
+        // adjust the Qtt
+        spnQtt.setSelection(0);
+        // adjust the Mmt
+        spnMmt.setSelection(0);
+
+        while (spnProps.size() > 1)
+        {
+            RemoveOneProperty();
+        }
     }
 
     private void CreateNewItem() {
@@ -211,8 +243,8 @@ public class ItemEntryActivity extends AppCompatActivity {
             }
         }
 
-        String qtt = (String)spnQuantity.getSelectedItem();
-        String mmt = (String)spnMeasurement.getSelectedItem();
+        String qtt = (String) spnQtt.getSelectedItem();
+        String mmt = (String) spnMmt.getSelectedItem();
 
         int qttID = ItemFramework.getInstance().lookUpQtt(qtt);
         int mmtID = ItemFramework.getInstance().lookUpMmt(mmt);
@@ -224,7 +256,7 @@ public class ItemEntryActivity extends AppCompatActivity {
 
             // try to change the props to that of the existing one
             // TODO
-            //copyFromThis(i);
+            copyFromThis(ItemFramework.getInstance().getMatchingItem(currentItem.toString()));
         } else {
             Item i = new Item(ItemFramework.getInstance().generateID(), false, currentItem.toString(), new BigDecimal(qttID), new BigDecimal(mmtID));
 

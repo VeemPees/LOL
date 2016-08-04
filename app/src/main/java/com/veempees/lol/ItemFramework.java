@@ -159,7 +159,16 @@ public class ItemFramework {
         return false;
     }
 
-
+    public Item getMatchingItem(String value)
+    {
+        for (Item i : theItems)
+        {
+            if (value.equalsIgnoreCase(i.getValue())) {
+                return i;
+            }
+        }
+        return null;
+    }
 
     /*
     public int getPropertyId(int sequence, boolean countEmptyOnes) {
