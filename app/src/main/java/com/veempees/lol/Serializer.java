@@ -17,13 +17,21 @@ public class Serializer  {
 
             ProgressDialog progress;
             progress = new ProgressDialog(activity);
-            progress.setMessage("Calling Google Apps Script Execution API ...");
+            progress.setMessage("Downloading data ...");
 
-            new MakeRequestTask(Globals.getGlobals().getCredential(), progress, activity).execute();
+            new MakeRequestTask(Globals.getGlobals().getCredential(), progress, activity).execute(Constants.ASYNC_REQUEST_GET);
         }
     }
 
     public void Upload(Activity activity)
     {
+        if (Globals.getGlobals().IsDeviceOnline()) {
+
+            ProgressDialog progress;
+            progress = new ProgressDialog(activity);
+            progress.setMessage("Uploading data ...");
+
+            new MakeRequestTask(Globals.getGlobals().getCredential(), progress, activity).execute(Constants.ASYNC_REQUEST_ADD);
+        }
     }
 }

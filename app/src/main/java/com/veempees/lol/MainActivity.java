@@ -50,8 +50,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                Intent myIntent = new Intent(MainActivity.this, ItemEntryActivity.class);
-                startActivityForResult(myIntent, Constants.DUMMY_REQUEST_CODE);
+                // Add new items
+                Intent addIntent = new Intent(MainActivity.this, ItemEntryActivity.class);
+                startActivityForResult(addIntent, Constants.ADD_ITEM_REQUEST_CODE);
 
             }
         });
@@ -83,12 +84,12 @@ public class MainActivity extends AppCompatActivity {
         {
             /*case R.id.action_add_item:
                 myIntent = new Intent(MainActivity.this, ItemEntryActivity.class);
-                startActivityForResult(myIntent, Constants.DUMMY_REQUEST_CODE);
+                startActivityForResult(myIntent, Constants.ADD_ITEM_REQUEST_CODE);
                 break;
 
             case R.id.action_edit_properties:
                 myIntent = new Intent(MainActivity.this, PropertyAddRemoveActivity.class);
-                startActivityForResult(myIntent, Constants.DUMMY_REQUEST_CODE);
+                startActivityForResult(myIntent, Constants.ADD_ITEM_REQ_CODE);
                 break;*/
 
             case R.id.action_settings:
@@ -133,9 +134,10 @@ public class MainActivity extends AppCompatActivity {
                     chooseAccount();
                 }
                 break;
-            case Constants.DUMMY_REQUEST_CODE:
-                SharedPreferences sharedPrefs = getPreferences(Context.MODE_PRIVATE);
-                this.adapter.renderingPropertiesChanged(sharedPrefs);
+            case Constants.ADD_ITEM_REQUEST_CODE:
+                //SharedPreferences sharedPrefs = getPreferences(Context.MODE_PRIVATE);
+                //this.adapter.renderingPropertiesChanged(sharedPrefs);
+                ItemFramework.getInstance().store(this);
                 this.adapter.notifyDataSetChanged();
                 break;
             default:

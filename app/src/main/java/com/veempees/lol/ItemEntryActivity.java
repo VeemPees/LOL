@@ -265,7 +265,7 @@ public class ItemEntryActivity extends AppCompatActivity {
                 i.addProperty(p.getId());
             }
 
-            ItemFramework.getInstance().addItem(i);
+            ItemFramework.getInstance().createItem(i);
             Logger.i(currentItem.toString() + " created");
             Reset();
         }

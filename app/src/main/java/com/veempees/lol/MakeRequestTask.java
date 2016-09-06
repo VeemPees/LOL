@@ -33,7 +33,7 @@ import com.google.api.services.script.model.Operation;
  * An asynchronous task that handles the Google Apps Script Execution API call.
  * Placing the API calls in their own task ensures the UI stays responsive.
  */
-public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
+public class MakeRequestTask extends AsyncTask<Integer, Void, List<String>> {
     private com.google.api.services.script.Script mService = null;
     private Exception mLastError = null;
     private ProgressDialog mProgress;
@@ -80,9 +80,20 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
      * @param params no parameters needed for this task.
      */
     @Override
-    protected List<String> doInBackground(Void... params) {
+    protected List<String> doInBackground(Integer... params) {
         try {
-            return getDataFromApi("getItems");
+            int code = params[0];
+            switch (code) {
+                case Constants.ASYNC_REQUEST_GET:
+                    return getItemsFromApi("getItems");
+                    //break;
+                case Constants.ASYNC_REQUEST_ADD:
+                    return addNewItemsThroughApi("addNewItems");
+                default:
+                    cancel(true);
+                    return null;
+            }
+
         } catch (Exception e) {
             mLastError = e;
             cancel(true);
@@ -90,12 +101,71 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
         }
     }
 
+    private List<String> addNewItemsThroughApi(String fnName)
+            throws IOException, GoogleAuthException {
+
+        // Create an execution request object.
+        ExecutionRequest request = new ExecutionRequest().setFunction(fnName);
+
+        List<Object> params = new ArrayList<Object>();
+
+        List<Object> i1 = new ArrayList<Object>();
+        List<Object> i2 = new ArrayList<Object>();
+
+        i1.add(101);
+        i1.add(false);
+        i1.add(17);
+        i1.add(6);
+        i1.add("New item i1");
+        i1.add(7);
+        i1.add(1);
+        i1.add(2);
+        i1.add(3);
+        i1.add(4);
+        i1.add(5);
+        i1.add(6);
+        i1.add(7);
+
+        List<Object> items = new ArrayList<Object>();
+
+        items.add(i1);
+
+        i2.add(102);
+        i2.add(false);
+        i2.add(16);
+        i2.add(5);
+        i2.add("New item i2");
+        i2.add(4);
+        i2.add(11);
+        i2.add(12);
+        i2.add(13);
+        i2.add(14);
+
+        items.add(i2);
+
+        params.add(items);
+        request.setParameters(params);
+
+        // TODO
+        request.setDevMode(true);
+
+        // Make the request.
+        Operation op = mService.scripts().run(Constants.SCRIPT_ID, request).execute();
+
+        // Print results of request.
+        if (op.getError() != null) {
+            throw new IOException(getScriptError(op));
+        }
+
+        return null;
+    }
+
     /**
      * Call the API to run an Apps Script function
      * @throws IOException, GoogleAuthException
      */
 
-    private List<String> getDataFromApi(String fnName)
+    private List<String> getItemsFromApi(String fnName)
             throws IOException, GoogleAuthException {
 
         // Create an execution request object.

@@ -10,6 +10,7 @@ import static junit.framework.Assert.*;
 public class ItemFramework {
     private static ItemFramework instance;
     private List<Item> theItems;
+    private List<Item> newItems;
     int nextItemID;
 
 
@@ -35,6 +36,7 @@ public class ItemFramework {
     {
         serializer = new Serializer();
         theItems = new ArrayList<>();
+        newItems = new ArrayList<>();
         theMementos = new ArrayList<>();
         theProps = new ArrayList<>();
         theQtts = new ArrayList<>();
@@ -64,12 +66,10 @@ public class ItemFramework {
         return bd;
     }
 
-/*
     public void store(Activity activity)
     {
         serializer.Upload(activity);
     }
-*/
 
 /*
     public List<Item> getItems() {
@@ -129,6 +129,11 @@ public class ItemFramework {
     public void addItem(Item item) {
        theItems.add(item);
     }
+
+    public void createItem(Item i) {
+        newItems.add(i);
+    }
+
 
     public List<Item> getItemsByPropId(int propId) {
 
@@ -461,4 +466,5 @@ public class ItemFramework {
         assertTrue(index < theMementos.size());
         return theMementos.get(index);
     }
+
 }
