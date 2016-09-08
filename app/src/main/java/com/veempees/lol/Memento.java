@@ -40,6 +40,11 @@ public class Memento {
         this.mmtID = mmtID.intValue();
     }
 
+    public void setID(BigDecimal ID)
+    {
+        this.ID = ID.intValue();
+    }
+
     public void addProperty(Integer propID)
     {
         this.propIds.add(propID);

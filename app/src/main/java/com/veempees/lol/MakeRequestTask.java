@@ -107,41 +107,34 @@ public class MakeRequestTask extends AsyncTask<Integer, Void, List<String>> {
         // Create an execution request object.
         ExecutionRequest request = new ExecutionRequest().setFunction(fnName);
 
-        List<Object> params = new ArrayList<Object>();
-
-        List<Object> i1 = new ArrayList<Object>();
-        List<Object> i2 = new ArrayList<Object>();
-
-        i1.add(101);
-        i1.add(false);
-        i1.add(17);
-        i1.add(6);
-        i1.add("New item i1");
-        i1.add(7);
-        i1.add(1);
-        i1.add(2);
-        i1.add(3);
-        i1.add(4);
-        i1.add(5);
-        i1.add(6);
-        i1.add(7);
+        List<Item> newItems = ItemFramework.getInstance().getNewItems();
 
         List<Object> items = new ArrayList<Object>();
 
-        items.add(i1);
+        for (Item item : newItems)
+        {
+            List<Object> itemData = new ArrayList<Object>();
 
-        i2.add(102);
-        i2.add(false);
-        i2.add(16);
-        i2.add(5);
-        i2.add("New item i2");
-        i2.add(4);
-        i2.add(11);
-        i2.add(12);
-        i2.add(13);
-        i2.add(14);
+            //  0      1      2      3      4          5
+            // isDone, QttID, MmtID, Value, PropCount, [Props]
 
-        items.add(i2);
+            // ID is generated in the table, so it is not sent here
+            // instead, the ID will be sent back from the server
+            itemData.add(item.isDone());
+            itemData.add(item.getQttyID());
+            itemData.add(item.getMmtID());
+            itemData.add(item.getValue());
+
+            List<Integer> props = item.getPropertyIds();
+            itemData.add(props.size());
+            for (int i = 0; i < props.size(); i++)
+            {
+                itemData.add(props.get(i));
+            }
+            items.add(itemData);
+        }
+
+        List<Object> params = new ArrayList<Object>();
 
         params.add(items);
         request.setParameters(params);
@@ -156,6 +149,31 @@ public class MakeRequestTask extends AsyncTask<Integer, Void, List<String>> {
         if (op.getError() != null) {
             throw new IOException(getScriptError(op));
         }
+
+        if (op.getResponse() != null &&
+            op.getResponse().get("result") != null) {
+
+            Object o = op.getResponse().get("result");
+
+            if (o instanceof ArrayList) {
+
+                ArrayList<Object> IDs = (ArrayList<Object>) o;
+
+                if (newItems.size() == IDs.size()) {
+                    for (int i = 0; i < newItems.size(); i++) {
+
+                        Item newItem = newItems.get(i);
+
+                        newItem.setID((BigDecimal)IDs.get(i));
+                        ItemFramework.getInstance().addItem(newItem);
+                    }
+                } else {
+                    throw new IOException("newItems.size() != IDs.size()");
+                }
+            }
+        }
+
+        ItemFramework.getInstance().resetNewItems();
 
         return null;
     }

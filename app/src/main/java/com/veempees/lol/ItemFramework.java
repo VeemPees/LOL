@@ -50,6 +50,7 @@ public class ItemFramework {
         resetMmts();
         resetMementos();
         resetItems();
+        resetNewItems();
         serializer.Download(activity);
         nextItemID = Constants.NEXT_ITEM_INDEX_START;
     }
@@ -57,6 +58,10 @@ public class ItemFramework {
     private void resetItems()
     {
         theItems.clear();
+    }
+    void resetNewItems()
+    {
+        newItems.clear();
     }
 
     BigDecimal generateID()
@@ -134,6 +139,9 @@ public class ItemFramework {
         newItems.add(i);
     }
 
+    public List<Item> getNewItems() {
+        return newItems;
+    }
 
     public List<Item> getItemsByPropId(int propId) {
 
