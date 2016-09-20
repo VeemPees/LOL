@@ -15,9 +15,17 @@ public interface Constants {
     String PREF_SHOW_QUANTITY_BEFORE_ITEM = "show_quantity_before_item";
     String PREF_SHOW_COUNT_AFTER_PROPERTY = "show_count_after_group";
 
+    int MENU_ITEM_DELETE = 1;
+    int MENU_ITEM_EDIT = 2;
+
+    String PROPERTY_ID = "PropertyId";
+    int DUMMY_PROPERTY_ID = 0xffff;
+
     int ADD_ITEM_REQUEST_CODE = 11;
+    int EDIT_ITEM_REQUEST_CODE = 12;
     int NEXT_ITEM_INDEX_START = 64000;
 
     int ASYNC_REQUEST_GET = 1;
     int ASYNC_REQUEST_ADD = 2;
+    int ASYNC_REQUEST_ADD_PROP = 3;
 }

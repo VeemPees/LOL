@@ -86,11 +86,11 @@ public class MainActivity extends AppCompatActivity {
                 myIntent = new Intent(MainActivity.this, ItemEntryActivity.class);
                 startActivityForResult(myIntent, Constants.ADD_ITEM_REQUEST_CODE);
                 break;
-
+            */
             case R.id.action_edit_properties:
-                myIntent = new Intent(MainActivity.this, PropertyAddRemoveActivity.class);
-                startActivityForResult(myIntent, Constants.ADD_ITEM_REQ_CODE);
-                break;*/
+                myIntent = new Intent(MainActivity.this, PropertyChangeActivity.class);
+                startActivityForResult(myIntent, Constants.EDIT_ITEM_REQUEST_CODE);
+                break;
 
             case R.id.action_settings:
                 break;
@@ -140,6 +140,8 @@ public class MainActivity extends AppCompatActivity {
                 ItemFramework.getInstance().store(this);
                 this.adapter.notifyDataSetChanged();
                 break;
+            case Constants.EDIT_ITEM_REQUEST_CODE:
+
             default:
 
         }

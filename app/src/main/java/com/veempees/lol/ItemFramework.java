@@ -41,6 +41,7 @@ public class ItemFramework {
         theProps = new ArrayList<>();
         theQtts = new ArrayList<>();
         theMmts = new ArrayList<>();
+        newPropCandidate = "";
     }
 
     public void reload(Activity activity)
@@ -448,6 +449,28 @@ public class ItemFramework {
                 return;
             }
         }
+    }
+
+    String newPropCandidate;
+
+    public String getNewPropCandidate()
+    {
+        return newPropCandidate;
+    }
+
+    public void resetNewPropCandidate()
+    {
+        newPropCandidate = "";
+    }
+
+    public void setNewPropCandidate(String propCandidate)
+    {
+        newPropCandidate = propCandidate;
+    }
+
+    public void uploadNewProp(Activity activity)
+    {
+        serializer.Upload(activity);
     }
 
     /*

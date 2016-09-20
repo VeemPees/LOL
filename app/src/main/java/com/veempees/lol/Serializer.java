@@ -11,6 +11,7 @@ import java.util.List;
 
 public class Serializer  {
 
+    // TODO refactor this into something meaningful
     public void Download(Activity activity)
     {
         if (Globals.getGlobals().IsDeviceOnline()) {
@@ -32,6 +33,18 @@ public class Serializer  {
             progress.setMessage("Uploading data ...");
 
             new MakeRequestTask(Globals.getGlobals().getCredential(), progress, activity).execute(Constants.ASYNC_REQUEST_ADD);
+        }
+    }
+
+    public void UploadNewProperty(Activity activity)
+    {
+        if (Globals.getGlobals().IsDeviceOnline()) {
+
+            ProgressDialog progress;
+            progress = new ProgressDialog(activity);
+            progress.setMessage("Uploading data ...");
+
+            new MakeRequestTask(Globals.getGlobals().getCredential(), progress, activity).execute(Constants.ASYNC_REQUEST_ADD_PROP);
         }
     }
 }

@@ -25,7 +25,25 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ItemEntryActivity"></activity>
+        <activity android:name=".ItemEntryActivity" />
+        <activity
+            android:name=".PropertyChangeActivity"
+            android:label="@string/title_activity_property_change"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.veempees.lol.MainActivity" />
+        </activity>
+        <activity
+            android:name=".PropertyRenameActivity"
+            android:label="@string/title_activity_property_rename"
+            android:parentActivityName=".PropertyChangeActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.veempees.lol.PropertyChangeActivity" />
+        </activity>
     </application>
 
 </manifest>

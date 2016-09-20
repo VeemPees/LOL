@@ -83,12 +83,18 @@ public class MakeRequestTask extends AsyncTask<Integer, Void, List<String>> {
     protected List<String> doInBackground(Integer... params) {
         try {
             int code = params[0];
+
+            // TODO we do not need the function name as a parameter
             switch (code) {
                 case Constants.ASYNC_REQUEST_GET:
                     return getItemsFromApi("getItems");
-                    //break;
+
                 case Constants.ASYNC_REQUEST_ADD:
                     return addNewItemsThroughApi("addNewItems");
+
+                case Constants.ASYNC_REQUEST_ADD_PROP:
+                    return addNewPropThroughApi("addNewProp");
+
                 default:
                     cancel(true);
                     return null;
@@ -99,6 +105,48 @@ public class MakeRequestTask extends AsyncTask<Integer, Void, List<String>> {
             cancel(true);
             return null;
         }
+    }
+
+    private List<String> addNewPropThroughApi(String fnName)
+            throws IOException, GoogleAuthException {
+
+        // Create an execution request object.
+        ExecutionRequest request = new ExecutionRequest().setFunction(fnName);
+
+        String newProp = ItemFramework.getInstance().getNewPropCandidate();
+
+        List<Object> params = new ArrayList<Object>();
+
+        params.add(newProp);
+        request.setParameters(params);
+
+        // TODO
+        request.setDevMode(true);
+
+        // Make the request.
+        Operation op = mService.scripts().run(Constants.SCRIPT_ID, request).execute();
+
+        // Print results of request.
+        if (op.getError() != null) {
+            throw new IOException(getScriptError(op));
+        }
+
+        if (op.getResponse() != null &&
+                op.getResponse().get("result") != null) {
+
+            Object o = op.getResponse().get("result");
+
+            if (o instanceof BigDecimal) {
+
+                BigDecimal ID = (BigDecimal) o;
+
+                ItemFramework.getInstance().addProp(ID.intValue(), newProp);
+            }
+        }
+
+        ItemFramework.getInstance().resetNewPropCandidate();
+
+        return null;
     }
 
     private List<String> addNewItemsThroughApi(String fnName)

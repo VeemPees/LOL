@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">LOL</string>
     <string name="action_settings">Settings</string>
+    <string name="action_edit_properties">Edit properties</string>
+    <string name="action_add_property">Add</string>
     <string name="title_activity_settings">Settings</string>
     <string name="XXXXXXXX">XXXXXXXX</string>
     <string name="btn_next_new_item">Next</string>
@@ -26,5 +28,13 @@
     <string name="pref_title_show_count_after_group">Count in group</string>
     <string name="pref_description_show_count_after_group">Show or hide the item count after the group.
     </string>
+
+    <string name="delete_property">Delete</string>
+    <string name="edit_property">Edit</string>
+    <string name="rename_property">Rename</string>
+    <string name="new_property">New property</string>
+    <string name="ok">OK</string>
+    <string name="title_activity_property_change">PropertyChangeActivity</string>
+    <string name="title_activity_property_rename">PropertyRenameActivity</string>
 
 </resources>
