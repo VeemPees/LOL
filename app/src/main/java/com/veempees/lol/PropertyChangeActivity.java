@@ -1,5 +1,6 @@
 package com.veempees.lol;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -94,10 +95,34 @@ public class PropertyChangeActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == Constants.MENU_ITEM_EDIT)
-        {
-            rebuildAdapter();
-            this.adapter.notifyDataSetChanged();
+        if (requestCode == Constants.MENU_ITEM_EDIT) {
+            if (resultCode == RESULT_OK) {
+
+                int propID = data.getIntExtra(Constants.INTENT_EXTRA_ID_KEY, Constants.DUMMY_PROPERTY_ID);
+                String value = data.getStringExtra(Constants.INTENT_EXTRA_VALUE_KEY);
+
+                if (propID == Constants.DUMMY_PROPERTY_ID)
+                {
+                    // This is not an edit (of an existing), but a new
+                    ItemFramework.getInstance().setNewPropCandidate(value);
+
+                    if (Globals.getGlobals().IsDeviceOnline()) {
+
+                        ProgressDialog progress;
+                        progress = new ProgressDialog(this);
+                        progress.setMessage("Uploading data ...");
+
+                        new MakeRequestTask(Globals.getGlobals().getCredential(), progress, this, null).execute(Constants.ASYNC_REQUEST_ADD_PROP);
+                    }
+                }
+                else
+                {
+                    ItemFramework.getInstance().getProp(propID).setValue(value);
+                }
+
+                rebuildAdapter();
+                this.adapter.notifyDataSetChanged();
+            }
         }
     }
 }

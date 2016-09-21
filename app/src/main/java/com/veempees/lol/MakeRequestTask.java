@@ -28,7 +28,6 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.script.model.ExecutionRequest;
 import com.google.api.services.script.model.Operation;
 
-
 /**
  * An asynchronous task that handles the Google Apps Script Execution API call.
  * Placing the API calls in their own task ensures the UI stays responsive.
@@ -39,11 +38,22 @@ public class MakeRequestTask extends AsyncTask<Integer, Void, List<String>> {
     private ProgressDialog mProgress;
     private Activity mActivity;
 
+    public interface MakeRequestTaskResultReceiver {
+        public void completed(boolean cancelled);
+    }
+
+    private MakeRequestTaskResultReceiver mListener;
+
     public MakeRequestTask(GoogleAccountCredential credential,
                            ProgressDialog progress,
-                           Activity activity) {
+                           Activity activity,
+                           MakeRequestTaskResultReceiver listener) {
         mProgress = progress;
+
+        // TODO the Activity may not be necessary, the MakeRequestTaskResultReceiver listener could take over all tasks!?...
+
         mActivity = activity;
+        mListener = listener;
         HttpTransport transport = AndroidHttp.newCompatibleTransport();
         JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
         mService = new com.google.api.services.script.Script.Builder(
@@ -394,6 +404,10 @@ public class MakeRequestTask extends AsyncTask<Integer, Void, List<String>> {
         if (mActivity instanceof MainActivity) {
             ((MainActivity)mActivity).adapter.notifyDataSetChanged();
         }
+        if (mListener != null)
+        {
+            mListener.completed(false);
+        }
     }
 
     @Override
@@ -415,6 +429,10 @@ public class MakeRequestTask extends AsyncTask<Integer, Void, List<String>> {
             }
         } else {
             Logger.i("Request cancelled.");
+        }
+        if (mListener != null)
+        {
+            mListener.completed(true);
         }
     }
 }

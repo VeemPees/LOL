@@ -1,6 +1,7 @@
 package com.veempees.lol;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -13,8 +14,6 @@ public class ItemFramework {
     private List<Item> newItems;
     int nextItemID;
 
-
-    private Serializer serializer;
 
     public static void initInstance()
     {
@@ -34,7 +33,6 @@ public class ItemFramework {
     //Constructor hidden because this is a singleton
     private ItemFramework()
     {
-        serializer = new Serializer();
         theItems = new ArrayList<>();
         newItems = new ArrayList<>();
         theMementos = new ArrayList<>();
@@ -44,7 +42,7 @@ public class ItemFramework {
         newPropCandidate = "";
     }
 
-    public void reload(Activity activity)
+    public void reset()
     {
         resetQtts();
         resetProps();
@@ -52,7 +50,7 @@ public class ItemFramework {
         resetMementos();
         resetItems();
         resetNewItems();
-        serializer.Download(activity);
+
         nextItemID = Constants.NEXT_ITEM_INDEX_START;
     }
 
@@ -70,11 +68,6 @@ public class ItemFramework {
         nextItemID++;
         BigDecimal bd = new BigDecimal(nextItemID);
         return bd;
-    }
-
-    public void store(Activity activity)
-    {
-        serializer.Upload(activity);
     }
 
 /*
@@ -466,11 +459,6 @@ public class ItemFramework {
     public void setNewPropCandidate(String propCandidate)
     {
         newPropCandidate = propCandidate;
-    }
-
-    public void uploadNewProp(Activity activity)
-    {
-        serializer.Upload(activity);
     }
 
     /*

@@ -1,5 +1,6 @@
 package com.veempees.lol;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -59,19 +60,15 @@ public class PropertyRenameActivity extends AppCompatActivity {
 
                 String propName = editProperty.getText().toString();
 
-                if (propId == Constants.DUMMY_PROPERTY_ID)
-                {
-                    // This is not an edit (of an existing), but a new
-                    ItemFramework.getInstance().setNewPropCandidate(propName);
-                    ItemFramework.getInstance().uploadNewProp(PropertyRenameActivity.this);
-                }
-                else
-                {
-                    ItemFramework.getInstance().getProp(propId).setValue(propName);
+                if (propName.length() > 0) {
+
+                    Intent intent = getIntent();
+                    intent.putExtra(Constants.INTENT_EXTRA_ID_KEY, propId);
+                    intent.putExtra(Constants.INTENT_EXTRA_VALUE_KEY, propName);
+                    setResult(RESULT_OK);
+                    finish();
                 }
 
-                setResult(1);
-                finish();
             }
         });
     }

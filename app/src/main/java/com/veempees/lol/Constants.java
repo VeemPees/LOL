@@ -28,4 +28,7 @@ public interface Constants {
     int ASYNC_REQUEST_GET = 1;
     int ASYNC_REQUEST_ADD = 2;
     int ASYNC_REQUEST_ADD_PROP = 3;
+
+    String INTENT_EXTRA_ID_KEY = "ID";
+    String INTENT_EXTRA_VALUE_KEY = "Value";
 }

@@ -1,6 +1,7 @@
 package com.veempees.lol;
 
 import android.accounts.AccountManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -137,7 +138,14 @@ public class MainActivity extends AppCompatActivity {
             case Constants.ADD_ITEM_REQUEST_CODE:
                 //SharedPreferences sharedPrefs = getPreferences(Context.MODE_PRIVATE);
                 //this.adapter.renderingPropertiesChanged(sharedPrefs);
-                ItemFramework.getInstance().store(this);
+                if (Globals.getGlobals().IsDeviceOnline()) {
+
+                    ProgressDialog progress;
+                    progress = new ProgressDialog(this);
+                    progress.setMessage("Uploading data ...");
+
+                    new MakeRequestTask(Globals.getGlobals().getCredential(), progress, this, null).execute(Constants.ASYNC_REQUEST_ADD);
+                }
                 this.adapter.notifyDataSetChanged();
                 break;
             case Constants.EDIT_ITEM_REQUEST_CODE:
@@ -161,6 +169,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    private void reloadEverything()
+    {
+        if (Globals.getGlobals().IsDeviceOnline()) {
+
+            ItemFramework.getInstance().reset();
+
+            ProgressDialog progress;
+            progress = new ProgressDialog(this);
+            progress.setMessage("Downloading data ...");
+
+            new MakeRequestTask(Globals.getGlobals().getCredential(), progress, this, null).execute(Constants.ASYNC_REQUEST_GET);
+
+        } else {
+            //TODO mOutputText.setText("No network connection available.");
+            Logger.e("No network connection available.");
+        }
+    }
 
     /**
      * Attempt to get a set of data from the Google Apps Script Execution API to display. If the
@@ -171,13 +196,7 @@ public class MainActivity extends AppCompatActivity {
         if (!Globals.getGlobals().isAccountSelected()) {
             chooseAccount();
         } else {
-            if (Globals.getGlobals().IsDeviceOnline()) {
-                //new MakeRequestTask(mCredential, mProgress, this).execute();
-                ItemFramework.getInstance().reload(this);
-            } else {
-                //TODO mOutputText.setText("No network connection available.");
-                Logger.e("No network connection available.");
-            }
+            reloadEverything();
         }
     }
 }
