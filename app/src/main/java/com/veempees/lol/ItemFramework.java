@@ -40,6 +40,8 @@ public class ItemFramework {
         theQtts = new ArrayList<>();
         theMmts = new ArrayList<>();
         newPropCandidate = "";
+        updatePropCandidate = "";
+        updatePropCandidateID = 0;
     }
 
     public void reset()
@@ -459,6 +461,30 @@ public class ItemFramework {
     public void setNewPropCandidate(String propCandidate)
     {
         newPropCandidate = propCandidate;
+    }
+
+    String updatePropCandidate;
+    int updatePropCandidateID;
+
+    public String getUpdatePropCandidate()
+    {
+        return updatePropCandidate;
+    }
+    public int getUpdatePropCandidateID()
+    {
+        return updatePropCandidateID;
+    }
+
+    public void resetUpdatePropCandidate()
+    {
+        updatePropCandidate = "";
+        updatePropCandidateID = 0;
+    }
+
+    public void setUpdatePropCandidate(int ID, String propCandidate)
+    {
+        updatePropCandidateID = ID;
+        updatePropCandidate = propCandidate;
     }
 
     /*

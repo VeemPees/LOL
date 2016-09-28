@@ -65,7 +65,7 @@ public class PropertyRenameActivity extends AppCompatActivity {
                     Intent intent = getIntent();
                     intent.putExtra(Constants.INTENT_EXTRA_ID_KEY, propId);
                     intent.putExtra(Constants.INTENT_EXTRA_VALUE_KEY, propName);
-                    setResult(RESULT_OK);
+                    setResult(RESULT_OK, intent);
                     finish();
                 }
 

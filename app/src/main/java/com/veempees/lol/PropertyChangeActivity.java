@@ -105,23 +105,29 @@ public class PropertyChangeActivity extends AppCompatActivity {
                 {
                     // This is not an edit (of an existing), but a new
                     ItemFramework.getInstance().setNewPropCandidate(value);
-
-                    if (Globals.getGlobals().IsDeviceOnline()) {
-
-                        ProgressDialog progress;
-                        progress = new ProgressDialog(this);
-                        progress.setMessage("Uploading data ...");
-
-                        new MakeRequestTask(Globals.getGlobals().getCredential(), progress, this, null).execute(Constants.ASYNC_REQUEST_ADD_PROP);
-                    }
                 }
                 else
                 {
-                    ItemFramework.getInstance().getProp(propID).setValue(value);
+                    // This is an edit of an existing one
+                    ItemFramework.getInstance().setUpdatePropCandidate(propID, value);
                 }
 
-                rebuildAdapter();
-                this.adapter.notifyDataSetChanged();
+                if (Globals.getGlobals().IsDeviceOnline()) {
+
+                    ProgressDialog progress;
+                    progress = new ProgressDialog(this);
+                    progress.setMessage("Uploading data ...");
+
+                    int action = propID == Constants.DUMMY_PROPERTY_ID ? Constants.ASYNC_REQUEST_ADD_PROP : Constants.ASYNC_REQUEST_UPDATE_PROP;
+                    MakeRequestTask task = new MakeRequestTask(Globals.getGlobals().getCredential(), progress, this, new MakeRequestTask.MakeRequestTaskResultReceiver() {
+                        @Override
+                        public void completed(boolean cancelled) {
+                            rebuildAdapter();
+                            adapter.notifyDataSetChanged();
+                        }
+                    });
+                    task.execute(action);
+                }
             }
         }
     }

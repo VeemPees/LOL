@@ -105,6 +105,9 @@ public class MakeRequestTask extends AsyncTask<Integer, Void, List<String>> {
                 case Constants.ASYNC_REQUEST_ADD_PROP:
                     return addNewPropThroughApi("addNewProp");
 
+                case Constants.ASYNC_REQUEST_UPDATE_PROP:
+                    return updatePropThroughApi("updateProp");
+
                 default:
                     cancel(true);
                     return null;
@@ -155,6 +158,53 @@ public class MakeRequestTask extends AsyncTask<Integer, Void, List<String>> {
         }
 
         ItemFramework.getInstance().resetNewPropCandidate();
+
+        return null;
+    }
+
+    private List<String> updatePropThroughApi(String fnName)
+            throws IOException, GoogleAuthException {
+
+        // Create an execution request object.
+        ExecutionRequest request = new ExecutionRequest().setFunction(fnName);
+
+        int updatePropID = ItemFramework.getInstance().getUpdatePropCandidateID();
+        String updateProp = ItemFramework.getInstance().getUpdatePropCandidate();
+
+        List<Object> params = new ArrayList<Object>();
+
+        params.add(updatePropID);
+        params.add(updateProp);
+        request.setParameters(params);
+
+        // TODO
+        request.setDevMode(true);
+
+        // Make the request.
+        Operation op = mService.scripts().run(Constants.SCRIPT_ID, request).execute();
+
+        // Print results of request.
+        if (op.getError() != null) {
+            throw new IOException(getScriptError(op));
+        }
+
+        if (op.getResponse() != null &&
+                op.getResponse().get("result") != null) {
+
+            Object o = op.getResponse().get("result");
+
+            if (o instanceof Boolean) {
+
+                Boolean success = (Boolean) o;
+                if (success) {
+                    ItemFramework.getInstance().getProp(updatePropID).setValue(updateProp);
+                } else {
+                    throw new IOException("Operation failed");
+                }
+            }
+        }
+
+        ItemFramework.getInstance().resetUpdatePropCandidate();
 
         return null;
     }
